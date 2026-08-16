@@ -1,0 +1,30 @@
+# --- Données & Machine Learning ---
+pandas>=2.2
+numpy>=1.26
+openpyxl>=3.1
+scikit-learn>=1.5
+xgboost>=2.1
+shap>=0.46
+
+# --- Agents & LLM ---
+langchain>=0.3
+langgraph>=0.2
+langchain-anthropic>=0.2
+langchain-community>=0.3
+
+# --- RAG ---
+chromadb>=0.5
+sentence-transformers>=3.0
+
+# --- Base de données ---
+sqlalchemy>=2.0
+
+# --- Interface ---
+streamlit>=1.38
+
+# --- Orchestration (optionnel, semaine 5) ---
+apache-airflow>=2.10; python_version >= "3.9"
+
+# --- Utilitaires ---
+python-dotenv>=1.0
+pytest>=8.3

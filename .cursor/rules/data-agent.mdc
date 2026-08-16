@@ -1,0 +1,48 @@
+# Data Agent Development Rules
+
+You are working on a Customer Digital Twin project.
+
+Before modifying code:
+
+1. Inspect the existing repository.
+2. Read ARCHITECTURE.md.
+3. Inspect relevant existing modules.
+4. Inspect the real dataset schemas before designing transformations.
+5. Do not invent columns.
+6. Do not duplicate existing functionality.
+7. Do not modify unrelated modules.
+8. Do not introduce unnecessary frameworks.
+
+For the Data Agent:
+
+Raw data
+→ ingest
+→ cleaning
+→ transformation
+→ behavioral enrichment
+→ persona
+→ data warehouse
+
+Keep these responsibilities separated.
+
+The ML pipeline is separate from the operational Data Agent.
+
+Never use the Churn label as an operational input feature.
+
+Online Retail II and Support Tickets must not be directly mapped to Telco customers without a valid shared identifier.
+
+Clearly distinguish:
+- real data
+- derived data
+- synthetic data
+- predicted data
+
+When implementing a feature:
+
+1. Explain what currently exists.
+2. Explain what is missing.
+3. Propose the change.
+4. Identify the files that will be modified.
+5. Wait for approval before making large architectural changes.
+
+Prefer small, testable changes over large rewrites.

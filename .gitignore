@@ -1,0 +1,26 @@
+# Environnements virtuels
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Variables d'environnement (clés API)
+.env
+.env.example
+
+# Données volumineuses (ne pas versionner les CSV bruts)
+data/raw/*.csv
+data/processed/*.db
+data/vectorstore/
+
+# Modèles entraînés
+src/models/*.pkl
+src/models/*.joblib
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+.vscode/
+*.log
