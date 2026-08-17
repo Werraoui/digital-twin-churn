@@ -26,6 +26,9 @@ RETAIL_RAW_XLSX_PATH = RAW_DATA_DIR / "online_retail_II.xlsx"
 TICKETS_RAW_PATH = RAW_DATA_DIR / "customer_support_tickets_200k.csv"
 TELCO_ML_PATH = DATA_DIR / "processed" / "telco_clean.csv"
 TELCO_ML_TRAINING_PATH = DATA_DIR / "ml_data" / "processed" / "telco_clean.csv"
+TELCO_ML_READY_PATH = DATA_DIR / "ml_data" / "processed" / "telco_train_ready.csv"
+MODELS_DIR = PROJECT_ROOT / "src" / "models"
+SELECTED_CHURN_MODEL = "logreg"
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 _DEFAULT_DB = DATA_DIR / "processed" / "warehouse.db"

@@ -5,6 +5,7 @@ openpyxl>=3.1
 scikit-learn>=1.5
 xgboost>=2.1
 shap>=0.46
+matplotlib>=3.9
 
 # --- Agents & LLM ---
 langchain>=0.3
