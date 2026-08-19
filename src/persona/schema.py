@@ -35,9 +35,13 @@ class Persona:
 
     churn_risk_score: Optional[float] = None
     risk_factors: list = field(default_factory=list)
+    simulation_scenarios: list = field(default_factory=list)
 
     def is_enriched(self) -> bool:
         return self.sentiment is not None
+
+    def is_scored(self) -> bool:
+        return self.churn_risk_score is not None
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)

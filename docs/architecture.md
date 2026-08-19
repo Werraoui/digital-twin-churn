@@ -11,3 +11,5 @@ Données, Analyse de Sentiments, Prédiction, Simulation (Digital Twin), Génér
 
 Le Persona client circule entre les agents comme mémoire partagée : construit par l'Agent Données,
 enrichi par l'Agent Analyse de Sentiments, puis consommé par la Prédiction et la Simulation.
+
+Jeu de règles du jumeau (effet mesuré sur le score) : `docs/simulation_rules.md`.
