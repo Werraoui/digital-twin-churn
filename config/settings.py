@@ -36,3 +36,4 @@ DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_DEFAULT_DB.as_posix()}")
 CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", str(DATA_DIR / "vectorstore"))
 
 CHURN_RISK_THRESHOLD = 0.5  # seuil au-delà duquel l'orchestrateur déclenche la simulation
+CALL_RISK_THRESHOLD = 0.7  # au-delà : canal "call", sinon "email"

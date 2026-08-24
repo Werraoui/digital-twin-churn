@@ -37,6 +37,10 @@ class Persona:
     risk_factors: list = field(default_factory=list)
     simulation_scenarios: list = field(default_factory=list)
 
+    recommended_action: Optional[dict] = None
+    decision_justification: Optional[str] = None
+    contact_channel: Optional[str] = None
+
     def is_enriched(self) -> bool:
         return self.sentiment is not None
 
