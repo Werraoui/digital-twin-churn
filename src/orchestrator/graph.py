@@ -13,7 +13,7 @@ from src.agents.sentiment_agent.persona_updater import update_persona
 from src.agents.prediction_agent.predict import predict_churn
 from src.agents.simulation_agent.client_twin import ClientTwin
 from src.agents.simulation_agent.scenario_runner import run_scenarios
-from src.agents.generator_agent.message_generator import generate_retention_message
+from src.agents.generator_agent.run import generate_for_persona
 from src.agents.decision_agent.run import decide_for_persona
 from src.agents.decision_agent.justify import build_justification
 from src.agents.simulation_agent.run import attach_scenarios
@@ -47,7 +47,7 @@ def run_pipeline(telco_client, behavioral_history, review_text) -> dict:
             "justification": persona.decision_justification,
         }
 
-    message = generate_retention_message(persona, chosen["action"])
+    persona, message = generate_for_persona(persona)
     justification = persona.decision_justification or build_justification(
         risk_score, persona.risk_factors, chosen
     )

@@ -13,3 +13,4 @@ Le Persona client circule entre les agents comme mémoire partagée : construit 
 enrichi par l'Agent Analyse de Sentiments, puis consommé par la Prédiction et la Simulation.
 
 Jeu de règles du jumeau (effet mesuré sur le score) : `docs/simulation_rules.md`.
+Agent Générateur (RAG) : `docs/generator_agent.md`.

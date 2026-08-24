@@ -33,7 +33,7 @@ notebooks/                  Exploration et prototypage
 python -m venv .venv
 source .venv/bin/activate        # Windows : .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env             # renseigner ta clé API Claude
+cp .env.example .env             # renseigner GROQ_API_KEY (gratuit) ou GEMINI_API_KEY
 streamlit run interface/app.py
 ```
 
@@ -41,6 +41,9 @@ streamlit run interface/app.py
 
 Voir `docs/data_guide.md` pour la méthodologie des sources, et `docs/data_agent.md` pour
 le détail de l'Agent Données (composants, pipeline, Persona, warehouse).
+
+Décision + génération (offre + canal call/email + message) :
+`docs/README_decision_and_generation.md`.
 
 ## Tests
 

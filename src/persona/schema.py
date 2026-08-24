@@ -41,6 +41,9 @@ class Persona:
     decision_justification: Optional[str] = None
     contact_channel: Optional[str] = None
 
+    retention_message: Optional[str] = None
+    rag_context: list = field(default_factory=list)
+
     def is_enriched(self) -> bool:
         return self.sentiment is not None
 

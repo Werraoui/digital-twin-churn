@@ -31,6 +31,11 @@ MODELS_DIR = PROJECT_ROOT / "src" / "models"
 SELECTED_CHURN_MODEL = "logreg"
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+# Free-first: groq | gemini | anthropic | template (empty = auto-detect)
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "").strip().lower()
+LLM_MODEL = os.getenv("LLM_MODEL", "").strip()
 _DEFAULT_DB = DATA_DIR / "processed" / "warehouse.db"
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_DEFAULT_DB.as_posix()}")
 CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", str(DATA_DIR / "vectorstore"))

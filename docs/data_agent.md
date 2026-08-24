@@ -283,13 +283,13 @@ Missing IDs raise `CustomerNotFoundError`.
 From the project root, with the venv:
 
 ```powershell
-.\.env\Scripts\python.exe -m pytest tests/ -q
+.\.venv\Scripts\python.exe -m pytest tests/ -q
 ```
 
 Full ETL (slow if Excel both years are loaded):
 
 ```powershell
-.\.env\Scripts\python.exe -c "from src.agents.data_agent.pipeline import run_data_agent_pipeline; print(run_data_agent_pipeline())"
+.\.venv\Scripts\python.exe -c "from src.agents.data_agent.pipeline import run_data_agent_pipeline; print(run_data_agent_pipeline())"
 ```
 
 Read a Persona after the warehouse is loaded:
