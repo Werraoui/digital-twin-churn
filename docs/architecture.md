@@ -14,3 +14,7 @@ enrichi par l'Agent Analyse de Sentiments, puis consommé par la Prédiction et 
 
 Jeu de règles du jumeau (effet mesuré sur le score) : `docs/simulation_rules.md`.
 Agent Générateur (RAG) : `docs/generator_agent.md`.
+Orchestrateur LangGraph : `docs/orchestrator.md`.
+Workflow simple : `docs/README_orchestrator.md`.
+Décision + génération : `docs/README_decision_and_generation.md`.
+Interface Streamlit : `docs/interface.md`.

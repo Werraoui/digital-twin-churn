@@ -34,7 +34,7 @@ python -m venv .venv
 source .venv/bin/activate        # Windows : .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env             # renseigner GROQ_API_KEY (gratuit) ou GEMINI_API_KEY
-streamlit run interface/app.py
+streamlit run interface/app.py   # interface (voir docs/interface.md)
 ```
 
 ## Jeux de données
@@ -44,6 +44,9 @@ le détail de l'Agent Données (composants, pipeline, Persona, warehouse).
 
 Décision + génération (offre + canal call/email + message) :
 `docs/README_decision_and_generation.md`.
+
+Orchestrateur LangGraph : `docs/orchestrator.md`.  
+Workflow orchestrateur (README simple) : `docs/README_orchestrator.md`.
 
 ## Tests
 
