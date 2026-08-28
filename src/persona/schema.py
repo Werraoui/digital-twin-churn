@@ -44,6 +44,15 @@ class Persona:
     retention_message: Optional[str] = None
     rag_context: list = field(default_factory=list)
 
+    # Operational retention workspace (UI / Supabase)
+    # ops_status: none | to_call | to_email | contacted | postponed
+    ops_status: str = "none"
+    # message_status: none | draft | validated | rejected | sent
+    message_status: str = "none"
+    agent_notes: Optional[str] = None
+    contacted_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
     def is_enriched(self) -> bool:
         return self.sentiment is not None
 

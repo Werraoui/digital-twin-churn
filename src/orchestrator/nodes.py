@@ -148,6 +148,45 @@ def generate_node(state: TwinState) -> TwinState:
 
 def persist_node(state: TwinState) -> TwinState:
     if state.get("persist", True) and state.get("persona") is not None:
-        save_persona(state["persona"])
-        logger.info("Persisted Persona %s", state["persona"].customer_id)
+        from config.settings import UI_OPERATOR
+        from src.agents.data_agent.repository import record_pipeline_run
+        from src.persona.ops import (
+            apply_decision_ops,
+            apply_low_risk_ops,
+            snapshot_for_run,
+            utc_now_iso,
+        )
+
+        persona = state["persona"]
+        status = state.get("status", "done")
+        score_before = (
+            float(persona.churn_risk_score)
+            if persona.churn_risk_score is not None
+            else None
+        )
+
+        if status in {"generated", "decided"} or (
+            persona.retention_message and status not in {"low_risk", "skipped"}
+        ):
+            persona = apply_decision_ops(persona)
+        elif status in {"low_risk", "skipped", "no_action"}:
+            persona = apply_low_risk_ops(persona)
+        else:
+            persona.updated_at = utc_now_iso()
+
+        save_persona(persona)
+        record_pipeline_run(
+            snapshot_for_run(
+                persona,
+                status=status,
+                score_before=score_before,
+                operator=UI_OPERATOR,
+            )
+        )
+        logger.info("Persisted Persona %s", persona.customer_id)
+        return {
+            "persona": persona,
+            "status": status,
+            "persist": state.get("persist", True),
+        }
     return {"status": state.get("status", "done"), "persist": state.get("persist", True)}

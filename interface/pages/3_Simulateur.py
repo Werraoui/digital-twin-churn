@@ -13,11 +13,11 @@ from interface.services import (
     refresh_scenarios,
     run_what_if,
 )
-from interface.style import page_setup
+from interface.style import page_setup, section
 
 page_setup(
     "Simulateur",
-    "Tester une offre sans écraser la recommandation (clone du jumeau)",
+    "Comparer l’effet d’une offre sur le score, sans modifier le profil client réel.",
 )
 
 table = load_persona_table()
@@ -32,22 +32,25 @@ default = st.session_state.get("selected_customer_id", ids[0])
 if default not in ids:
     default = ids[0]
 
-customer_id = st.selectbox("Client scorés", ids, index=ids.index(default))
-persona = fetch_persona(customer_id)
-st.metric("Score actuel", f"{float(persona.churn_risk_score):.3f}")
+section("Paramètres")
+p1, p2, p3 = st.columns([1.4, 1.6, 1])
+with p1:
+    customer_id = st.selectbox("Client scorés", ids, index=ids.index(default))
+with p2:
+    action = st.selectbox("Action à tester", AVAILABLE_ACTIONS)
+with p3:
+    persona = fetch_persona(customer_id)
+    st.metric("Score actuel", f"{float(persona.churn_risk_score):.3f}")
 
-action = st.selectbox("Action à simuler", AVAILABLE_ACTIONS)
-
-c1, c2 = st.columns(2)
-with c1:
+b1, b2 = st.columns(2)
+with b1:
     do_one = st.button("Simuler cette action", type="primary", use_container_width=True)
-with c2:
+with b2:
     do_all = st.button("Recalculer tous les scénarios", use_container_width=True)
 
 if do_one:
     try:
-        result = run_what_if(customer_id, action)
-        st.session_state["sim_result"] = result
+        st.session_state["sim_result"] = run_what_if(customer_id, action)
     except Exception as exc:
         st.error(str(exc))
 
@@ -56,37 +59,49 @@ if do_all:
         try:
             scenarios = refresh_scenarios(customer_id)
             st.session_state["sim_all"] = scenarios
-            st.success(f"{len(scenarios)} scénario(s) applicable(s)")
+            st.success(f"{len(scenarios)} scénario(s) applicable(s) enregistré(s)")
         except Exception as exc:
             st.error(str(exc))
 
 if "sim_result" in st.session_state:
     r = st.session_state["sim_result"]
-    st.subheader("Résultat")
+    section("Résultat de la simulation")
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Avant", f"{r['score_before']:.3f}")
     m2.metric("Après", f"{r['score_after']:.3f}")
     m3.metric("Δ risque", f"{r['delta']:+.3f}")
     m4.metric("Coût relatif", f"{r['cost']:.1f}")
     if not r["applied"]:
-        st.info("Action non applicable pour ce profil (no-op).")
+        st.info("Action non applicable pour ce profil (aucun changement).")
 
+section("Scénarios")
 if "sim_all" in st.session_state:
-    st.subheader("Tous les scénarios")
-    st.dataframe(
-        pd.DataFrame(st.session_state["sim_all"]),
-        use_container_width=True,
-        hide_index=True,
-    )
+    frame = pd.DataFrame(st.session_state["sim_all"])
 elif persona.simulation_scenarios:
-    st.subheader("Scénarios déjà stockés sur le Persona")
+    frame = pd.DataFrame(persona.simulation_scenarios)
+else:
+    frame = pd.DataFrame()
+
+if not frame.empty:
     st.dataframe(
-        pd.DataFrame(persona.simulation_scenarios),
+        frame.rename(
+            columns={
+                "action": "Action",
+                "applied": "Applicable",
+                "score_before": "Avant",
+                "score_after": "Après",
+                "delta": "Δ",
+                "cost": "Coût",
+                "delta_per_cost": "Δ / coût",
+            }
+        ),
         use_container_width=True,
         hide_index=True,
     )
+else:
+    st.caption("Aucun scénario disponible pour ce client.")
 
 st.caption(
-    "Le simulateur clone le Persona : le profil réel (contrat, paiement) n’est pas modifié "
-    "sauf si tu recalcules et sauvegardes la liste des scénarios."
+    "Le simulateur travaille sur un clone du Persona. "
+    "Le contrat / paiement réels ne changent que si tu recalcules et sauvegardes les scénarios."
 )

@@ -27,7 +27,7 @@ from config.settings import (
 logger = logging.getLogger(__name__)
 
 # Sensible free defaults
-_GROQ_MODEL = "llama-3.1-8b-instant"
+_GROQ_MODEL = "openai/gpt-oss-20b"
 _GEMINI_MODEL = "gemini-2.0-flash"
 _ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
 
@@ -66,7 +66,11 @@ def _http_json(url: str, payload: dict, *, headers: dict | None = None, timeout:
     request = urllib.request.Request(
         url,
         data=body,
-        headers={"Content-Type": "application/json", **(headers or {})},
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "digital-twin-churn/1.0",
+            **(headers or {}),
+        },
         method="POST",
     )
     try:
@@ -75,6 +79,25 @@ def _http_json(url: str, payload: dict, *, headers: dict | None = None, timeout:
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"HTTP {exc.code} from LLM API: {detail[:500]}") from exc
+
+
+def available_providers() -> list[str]:
+    """Ordered free-first providers that have credentials."""
+    ordered: list[str] = []
+    preferred = resolve_provider()
+    candidates = [preferred, "groq", "gemini", "anthropic"]
+    seen: set[str] = set()
+    for name in candidates:
+        if not name or name in seen or name == "template":
+            continue
+        seen.add(name)
+        if name == "groq" and GROQ_API_KEY:
+            ordered.append(name)
+        elif name == "gemini" and GEMINI_API_KEY:
+            ordered.append(name)
+        elif name == "anthropic" and ANTHROPIC_API_KEY:
+            ordered.append(name)
+    return ordered
 
 
 def call_groq(
@@ -179,14 +202,27 @@ def generate_with_llm(
     api_key: str | None = None,
     model: str | None = None,
 ) -> str:
-    """Dispatch to Groq / Gemini / Anthropic."""
-    name = resolve_provider(provider)
-    if name == "template":
+    """Dispatch to Groq / Gemini / Anthropic, with automatic provider failover."""
+    if provider:
+        name = provider.lower().strip()
+        chain = [name] if name != "template" else []
+    else:
+        chain = available_providers()
+    if not chain:
         raise RuntimeError("no LLM provider configured")
-    if name == "groq":
-        return call_groq(system_prompt, user_prompt, api_key=api_key, model=model)
-    if name == "gemini":
-        return call_gemini(system_prompt, user_prompt, api_key=api_key, model=model)
-    if name == "anthropic":
-        return call_anthropic(system_prompt, user_prompt, api_key=api_key, model=model)
-    raise ValueError(f"unknown LLM provider: {name!r} (use groq|gemini|anthropic|template)")
+
+    errors: list[str] = []
+    for name in chain:
+        try:
+            if name == "groq":
+                return call_groq(system_prompt, user_prompt, api_key=api_key, model=model)
+            if name == "gemini":
+                return call_gemini(system_prompt, user_prompt, api_key=api_key, model=model)
+            if name == "anthropic":
+                return call_anthropic(system_prompt, user_prompt, api_key=api_key, model=model)
+            raise ValueError(f"unknown LLM provider: {name!r}")
+        except Exception as exc:
+            errors.append(f"{name}: {exc}")
+            logger.warning("LLM provider %s failed (%s); trying next", name, exc)
+
+    raise RuntimeError("all LLM providers failed: " + " | ".join(errors))

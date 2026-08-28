@@ -42,3 +42,49 @@ CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", str(DATA_DIR / "vectorstore
 
 CHURN_RISK_THRESHOLD = 0.5  # seuil au-delà duquel l'orchestrateur déclenche la simulation
 CALL_RISK_THRESHOLD = 0.7  # au-delà : canal "call", sinon "email"
+
+# Supabase cloud warehouse (Personas + pipeline_runs).
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
+SUPABASE_SERVICE_KEY = (
+    os.getenv("SUPABASE_SERVICE_KEY", "").strip()
+    or os.getenv("SUPABASE_KEY", "").strip()
+)
+SUPABASE_ENABLED = os.getenv("SUPABASE_ENABLED", "true").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+# Persona pipeline backend: supabase | local | dual
+# - supabase: read/write cloud (primary) ; optional local mirror
+# - local: SQLite only
+# - dual: write both, read from PERSONA_READ_FROM
+_raw_backend = os.getenv("PERSONA_BACKEND", "").strip().lower()
+if _raw_backend in {"supabase", "local", "dual"}:
+    PERSONA_BACKEND = _raw_backend
+elif SUPABASE_ENABLED and SUPABASE_URL and SUPABASE_SERVICE_KEY:
+    PERSONA_BACKEND = "supabase"
+else:
+    PERSONA_BACKEND = "local"
+
+PERSONA_READ_FROM = os.getenv("PERSONA_READ_FROM", "").strip().lower() or (
+    "supabase" if PERSONA_BACKEND in {"supabase", "dual"} else "local"
+)
+# Mirror cloud writes to SQLite (useful backup). Default on for supabase backend.
+LOCAL_MIRROR = os.getenv(
+    "LOCAL_MIRROR",
+    "true" if PERSONA_BACKEND == "supabase" else "false",
+).strip().lower() in {"1", "true", "yes"}
+
+# If true, a Supabase failure raises (recommended when PERSONA_BACKEND=supabase).
+_default_strict = "true" if PERSONA_BACKEND == "supabase" else "false"
+SUPABASE_STRICT = os.getenv("SUPABASE_STRICT", _default_strict).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+
+# Streamlit gate (optional)
+UI_PASSWORD = os.getenv("UI_PASSWORD", "").strip()
+UI_OPERATOR = os.getenv("UI_OPERATOR", "analyst").strip() or "analyst"
+UI_ROLE = os.getenv("UI_ROLE", "writer").strip().lower() or "writer"  # reader | writer
+UI_CACHE_TTL_SECONDS = int(os.getenv("UI_CACHE_TTL_SECONDS", "15"))

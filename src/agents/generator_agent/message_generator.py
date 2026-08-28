@@ -157,17 +157,16 @@ def generate_retention_message(
     should_use_llm = use_llm if use_llm is not None else chosen != "template"
     if should_use_llm and chosen != "template":
         try:
+            # Let generate_with_llm failover across free providers when one fails (e.g. Groq 403).
             return generate_with_llm(
                 SYSTEM_PROMPT,
                 user_prompt,
-                provider=chosen,
+                provider=provider,
                 api_key=api_key,
                 model=model,
             )
         except Exception as exc:
-            logger.warning(
-                "LLM provider %s failed (%s); using template fallback", chosen, exc
-            )
+            logger.warning("All LLM providers failed (%s); using template fallback", exc)
 
     return _template_message(
         persona, action_id=action_id, channel=channel, rag_snippets=snippets

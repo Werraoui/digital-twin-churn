@@ -89,6 +89,23 @@ class PersonaRecord(Base):
     payload: Mapped[dict] = mapped_column(JSON)
 
 
+class PipelineRun(Base):
+    """History of orchestrator runs (local + mirrored to Supabase)."""
+
+    __tablename__ = "pipeline_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    customer_id: Mapped[str] = mapped_column(String(32), index=True)
+    status: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    action: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    justification: Mapped[str | None] = mapped_column(Text, nullable=True)
+    score_before: Mapped[float | None] = mapped_column(Float, nullable=True)
+    score_after: Mapped[float | None] = mapped_column(Float, nullable=True)
+    operator: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[str] = mapped_column(String(40))
+
+
 class PipelineMeta(Base):
     __tablename__ = "pipeline_meta"
 

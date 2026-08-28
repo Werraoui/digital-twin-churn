@@ -1,0 +1,1 @@
+"""External integrations (Supabase, etc.)."""
